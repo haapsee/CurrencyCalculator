@@ -1,5 +1,6 @@
 .env
 
+*/env-configmap.yaml
 
 # Ignore Visual Studio generated files and folders
 bin/
