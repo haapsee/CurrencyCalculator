@@ -1,0 +1,9 @@
+ 
+# But don't ignore these specific files and directories
+.gitignore
+.dockerfile
+ 
+# Ignore all C# project files and directories
+bin/
+obj/
+publish/

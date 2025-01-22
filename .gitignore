@@ -1,0 +1,32 @@
+.env
+
+# Ignore Visual Studio generated files and folders
+bin/
+obj/
+*.suo
+*.user
+*.userosscache
+ 
+# Ignore NuGet packages
+packages/
+ 
+# Ignore build output
+build/
+*.exe
+*.dll
+*.pdb
+ 
+# Ignore test results
+TestResults/
+覆盖率报告/
+ 
+# Ignore temporary files
+*.tmp
+*.temp
+ 
+# Ignore log files
+*.log
+ 
+# Ignore other miscellaneous files
+Thumbs.db
+Desktop.ini
