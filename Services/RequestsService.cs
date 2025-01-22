@@ -8,9 +8,11 @@ namespace CurrencyConverter.Services {
     public class RequestsService
     {
         private readonly HttpClient _httpClient;
+        private ICacheService cacheService;
 
-        public RequestsService()
+        public RequestsService(ICacheService cacheService)
         {
+            this.cacheService = cacheService;
             var apiKey = Environment.GetEnvironmentVariable("CURRENCYFREAKS_APIKEY");
             if (apiKey == null)
             {
@@ -25,40 +27,44 @@ namespace CurrencyConverter.Services {
         {
             try
             {
-                var apiKey = Environment.GetEnvironmentVariable("CURRENCYFREAKS_APIKEY");
-                String url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=" + apiKey;
-                
-                if (from.Equals("USD")) {
+                decimal currencyRate;
+
+                currencyRate = this.cacheService.GetConversionRate(from, to);
+                if (currencyRate != 0)
+                {
+                    Console.WriteLine("From cache");
+                    return currencyRate;
+                }
+
+                if (!to.Equals("USD") && !from.Equals("USD")) {
+                    currencyRate = await GetExchangeRate("USD", to) * await GetExchangeRate(from, "USD");
+                } else {
+                    var apiKey = Environment.GetEnvironmentVariable("CURRENCYFREAKS_APIKEY");
+                    String url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=" + apiKey;
+
                     var response = await _httpClient.GetAsync(url);
                     response.EnsureSuccessStatusCode();
                     String res = await response.Content.ReadAsStringAsync();
                     var json = JsonSerializer.Deserialize<RatesResponse>(res);
-                    return Convert.ToDecimal(json.rates[to]);
+
+                    if (from.Equals("USD")) {
+                        currencyRate = Convert.ToDecimal(json.rates[to]);
+                    } else {
+                        currencyRate = 1m / Convert.ToDecimal(json.rates[from]);
+                    }
                 }
-                else if (to.Equals("USD")) {
-                    var response = await _httpClient.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-                    String res = await response.Content.ReadAsStringAsync();
-                    var json = JsonSerializer.Deserialize<RatesResponse>(res);
-                    Console.WriteLine(json.rates[from]);
-                    return 1.0m / Convert.ToDecimal(json.rates[from]);
-                }
-                else {
-                    var response = await _httpClient.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-                    String res = await response.Content.ReadAsStringAsync();
-                    var json = JsonSerializer.Deserialize<RatesResponse>(res);
-                    decimal fromRate = Convert.ToDecimal(json.rates[from]);
-                    decimal toRate = Convert.ToDecimal(json.rates[to]);
-                    return (1.0m / fromRate) * toRate;
-                }
+                // Save the conversion rate to cache for future use
+                this.cacheService.SaveConversionRate(from, to, currencyRate);
+                Console.WriteLine($"From cache: {currencyRate}");
+                return currencyRate;
+
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 throw;
             }
-        }  
+        }
     }
 
     internal class RatesResponse

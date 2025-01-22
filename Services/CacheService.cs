@@ -13,6 +13,8 @@ namespace CurrencyConverter.Services {
         void Add(string key, object value);
         bool TryGetValue(string key, out object value);
         void Remove(string key);
+        void SaveConversionRate(string from, string to, decimal conversionRate);
+        decimal GetConversionRate(string from, string to);
     }
 
     public class CacheService : ICacheService {
@@ -48,6 +50,7 @@ namespace CurrencyConverter.Services {
         public decimal GetConversionRate(string from, string to) {
             var cacheKey = $"{from}_{to}_conversion_rate";
             if (TryGetValue(cacheKey, out var value)) {
+                Console.WriteLine("From cache");
                 return (decimal)value;
             }
             return 0; // or throw an exception if you want to handle missing data gracefully
