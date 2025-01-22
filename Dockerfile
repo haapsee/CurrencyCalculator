@@ -11,6 +11,4 @@ RUN dotnet restore
 # Copy everything else and build app
 COPY . ./
 
-# Expose port 80 and run the app
-EXPOSE 80
 ENTRYPOINT ["dotnet", "run", "--environment", "Development"]
