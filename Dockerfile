@@ -5,10 +5,10 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY *.csproj /app/
+COPY ./src/*.csproj /app/
 RUN dotnet restore
 
 # Copy everything else and build app
-COPY . ./
+COPY ./src /app
 
 ENTRYPOINT ["dotnet", "run", "--environment", "Development"]

@@ -31,4 +31,4 @@ TestResults/
 Thumbs.db
 Desktop.ini
 
-./kubernetes/env-configmap.yaml
+*/env-configmap.yaml

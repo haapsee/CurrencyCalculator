@@ -29,7 +29,7 @@ spec:
                 configMapKeyRef:
                   key: CURRENCYFREAKS_APIKEY
                   name: env
-          image: potpal.local/currency-converter:1.0
+          image: currency-converter:1.0
           name: app
           ports:
             - containerPort: 8080
