@@ -1,5 +1,6 @@
 .env
 
+
 # Ignore Visual Studio generated files and folders
 bin/
 obj/
@@ -31,4 +32,3 @@ TestResults/
 Thumbs.db
 Desktop.ini
 
-*/env-configmap.yaml
